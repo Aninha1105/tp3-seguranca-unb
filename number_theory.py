@@ -1,5 +1,4 @@
 import secrets
-
 primes = []
 
 def gcd(a, b):
@@ -67,3 +66,23 @@ def is_prime(n, k):
             return False
     
     return True
+
+def inverse_mod(a, mod):
+    return gcd(a, mod)[1]
+
+def gen_prime(bits):
+    while True:
+        lower_bound = 2 ** (bits - 1)
+        upper_bound = 2 ** bits - 1
+
+        candidate = secrets.randbelow(upper_bound - lower_bound + 1) + lower_bound
+
+        if candidate % 2 == 0:
+            candidate += 1
+            if candidate > upper_bound:
+                continue
+
+        if is_prime(candidate, 40):
+            return candidate
+        
+sieve(500)
