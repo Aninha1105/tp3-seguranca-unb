@@ -1,9 +1,11 @@
-import rsa_keys
 import number_theory
 
 def encrpyt(message, PE, mod):
-    pass
+    # (M^e mod n)
+    return number_theory.bin_pow(message, PE, mod)
 
 def decrypt(ciphertext, PV, mod):
-    pass
+    # (C^d mod n)
+    return number_theory.bin_pow(ciphertext, PV, mod)
+
 
