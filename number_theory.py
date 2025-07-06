@@ -61,7 +61,7 @@ def is_prime(n, k):
 def inverse_mod(a, mod):
     g, x, y = gcd(a, mod)
     if g != 1:
-        raise ValueError("n sao coprimos => n tem inverso")
+        raise ValueError("n são coprimos => n tem inverso")
     return x % mod
 
 def gen_prime(bits):
