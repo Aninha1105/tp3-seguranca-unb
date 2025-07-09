@@ -76,6 +76,7 @@ Utilize as abas para gerar chaves, assinar e verificar arquivos ou mensagens de 
 - `utils.py`: Utilitários para manipulação de chaves e arquivos.
 - `public_key.pem` / `private_key.pem`: Arquivos de chave pública e privada gerados.
 - `requirements.txt`: Lista de dependências Python.
+- `benchmark.py`: Calcula os tempos de execução do algoritmo para arquivos de diferentes tamanhos.
 
 ## Conclusão
 
