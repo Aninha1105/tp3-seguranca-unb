@@ -9,6 +9,13 @@ import rsa_core
 # parte 2 - item b
 # RFC pag 67
 def mgf1(seed, mask_len, hash_algo=hashlib.sha3_256):
+    # brief   Implementa a função de geração de máscara MGF1 conforme RFC 8017 (p.67).
+    # param   seed (bytes) — semente para gerar a máscara
+    # param   mask_len (int) — tamanho da máscara desejada em bytes
+    # param   hash_algo — função hash (por padrão SHA3-256)
+    # return  Máscara pseudoaleatória de comprimento mask_len
+    # complexity O(mask_len / h_len)
+
     h_len = hash_algo().digest_size
     t = b""
 
@@ -24,6 +31,13 @@ def mgf1(seed, mask_len, hash_algo=hashlib.sha3_256):
 # parte 2 - item b
 # RFC pag 42 (9.1.1)
 def pss_encode(message_hash_bytes, em_bits, salt_len, hash_algo=hashlib.sha3_256, specific_salt=None):
+    # brief   Codifica uma mensagem com o esquema EMSA-PSS.
+    # param   message_hash_bytes (bytes) — digest da mensagem original
+    # param   em_bits (int) — número de bits do bloco codificado EM
+    # param   salt_len (int) — comprimento do salt (em bytes)
+    # return  em (int), salt (bytes) — bloco codificado como inteiro e o salt usado
+    # complexity O(mask_len / h_len + hash)
+
     h_len = hash_algo().digest_size
     em_len = (em_bits + 7) // 8
 
@@ -68,6 +82,13 @@ def pss_encode(message_hash_bytes, em_bits, salt_len, hash_algo=hashlib.sha3_256
 # parte 2 - item c
 # RFC pag 37
 def generate_pss_signature(msg_bytes_original, D, MOD, salt_len=32, hash_algo=hashlib.sha3_256, specific_salt=None):
+    # brief   Gera uma assinatura digital RSA-PSS para uma mensagem em bytes.
+    # param   msg_bytes_original (bytes) — mensagem original
+    # param   D (int) — expoente privado
+    # param   MOD (int) — módulo RSA
+    # return  (signature_int, salt) — assinatura como inteiro e salt usado
+    # complexity O(log D + hash + MGF1)
+
     M = hasher.calculate_sha3_256_from_bytes(msg_bytes_original)
     
     # "EM of length \ceil ((modBits - 1)/8) octets such that the bit
@@ -85,6 +106,11 @@ def generate_pss_signature(msg_bytes_original, D, MOD, salt_len=32, hash_algo=ha
 ######################
 # parte 2 - item d
 def format_pss_signature_for_storage(sig_int, MOD, salt_len, hash_algo_name="sha3_256"):
+    # brief   Formata a assinatura e metadados para armazenamento (em Base64).
+    # param   sig_int (int), MOD (int), salt_len (int), hash_algo_name (str)
+    # return  Assinatura codificada como string Base64 (ES)
+    # complexity O(n) — depende do tamanho da assinatura
+
     sig_len = (MOD.bit_length() + 7) // 8
     sig_bytes = sig_int.to_bytes(sig_len, byteorder='big')
     sig_data = {
@@ -98,6 +124,11 @@ def format_pss_signature_for_storage(sig_int, MOD, salt_len, hash_algo_name="sha
 
 # parte 3 - item a    
 def parse_pss_signature_from_storage(ES):
+    # brief   Recupera os dados da assinatura a partir da string Base64 armazenada.
+    # param   ES (str) — string codificada da assinatura
+    # return  Dicionário com: signature_int, salt_length, hash_algorithm_name
+    # complexity O(n) — depende do tamanho da codificação Base64
+
     decoded_json_bytes = base64.b64decode(ES)
     decoded_json_str = decoded_json_bytes.decode('utf-8')
     sig_data = json.loads(decoded_json_str)
@@ -119,6 +150,11 @@ def parse_pss_signature_from_storage(ES):
 # RFC pag 44 (9.1.2)
 # Verification
 def pss_decode(em_int, m_hash_bytes_expected, em_bits, salt_len, hash_algo=hashlib.sha3_256):
+    # brief   Verifica a validade do bloco codificado EM de acordo com PSS.
+    # param   em_int (int), m_hash_bytes_expected (bytes), em_bits (int), salt_len (int)
+    # return  True se o bloco EM é válido, False se inválido
+    # complexity O(mask_len / h_len + hash)
+
     h_len = hash_algo().digest_size
     em_len = (em_bits + 7) // 8
     try:
@@ -181,4 +217,11 @@ def pss_decode(em_int, m_hash_bytes_expected, em_bits, salt_len, hash_algo=hashl
 # parte 3 - item c
 # RFC pag 35
 def pss_verify_decrypt_signature(sig_int, e, MOD):
+    # brief   Decifra a assinatura digital RSA usando a chave pública.
+    # param   sig_int (int) — assinatura como inteiro
+    # param   e (int) — expoente público
+    # param   MOD (int) — módulo RSA
+    # return  Valor decifrado (bloco EM codificado)
+    # complexity O(log e)
+
     return rsa_core.encrypt(sig_int, e, MOD)

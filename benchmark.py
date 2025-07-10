@@ -21,7 +21,7 @@ end = time.time()
 print(f"Geração de chaves ({KEY_BITS} bits): {end - start:.5f} s")
 
 # 2. Benchmark de assinatura para tamanhos variados
-for size in [100_000, 1_000_000, 5_000_000]:
+for size in [100_000, 1_000_000, 5_000_000, 10_000_000, 50_000_000, 100_000_000, 500_000_000, 1_000_000_000]:
     data = os.urandom(size)
     start = time.time()
     sig_int, _ = generate_pss_signature(data, d, P*Q, SALT_LEN, HASH_ALGO)
